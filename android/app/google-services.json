@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "66376789479",
+    "project_id": "aft-project-e9310",
+    "storage_bucket": "aft-project-e9310.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66376789479:android:79839876a0e65ed533a142",
+        "android_client_info": {
+          "package_name": "com.example.aft"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "66376789479-2hpdm5h379no69mgf4deisgv38brptnt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBM4JvJU0vlwbHkbu_cu4vlnFQR-0YO1eE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "66376789479-2hpdm5h379no69mgf4deisgv38brptnt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
