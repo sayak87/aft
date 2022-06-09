@@ -10,7 +10,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart' as ytplayer;
+import 'package:youtube_player_iframe/youtube_player_iframe.dart' ;
 import 'dart:core';
 
 import '../models/AUser.dart';
@@ -35,7 +36,7 @@ class _AddPostState extends State<AddPost> {
   var global = 'true';
   Uint8List? _file;
   var selected = 0;
-  var videoUrl = 'DavckVZylkg';
+  String? videoUrl = 'DavckVZylkg';
   bool textfield1selected = false;
   bool textfield1selected2 = false;
   int i=1;
@@ -113,7 +114,151 @@ class _AddPostState extends State<AddPost> {
     };
   }
 
+
+  _selectvideo(BuildContext context) async{
+
+
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: const Text("Paste The Video Url Here"),
+            children: [
+
+
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+            width: MediaQuery.of(context).size.width * 0.9,
+            child: TextField(
+
+              onChanged: (t){
+                videoUrl = ytplayer.YoutubePlayer.convertUrlToId(_videoUrlController.text);
+                print('this is the video id:');
+                print(videoUrl);
+
+                setState(() {
+                  videoUrl;
+                });
+
+                if(videoUrl!=null)
+                  {
+                    print('video id not null');
+
+                    setState(() {
+
+                      controller = YoutubePlayerController(
+                        initialVideoId: '${videoUrl}',
+                        params: const YoutubePlayerParams(
+                          showControls: true,
+                          showFullscreenButton: true,
+                          desktopMode: false,
+                          privacyEnhanced: true,
+                          useHybridComposition: true,
+                        ),
+                      );
+
+
+                    });
+
+
+
+                  }
+
+              },
+              onSubmitted: (t){
+
+                if(_videoUrlController.text.length ==0)
+                  {
+                    setState(() {
+                      selected = 0;
+                    });
+                  }
+
+                else{
+
+                  print(videoUrl);
+                }
+              },
+            controller: _videoUrlController,
+            maxLines: 1,
+            decoration: const InputDecoration(
+            hintText: "Paste video url here",
+
+            border: InputBorder.none,
+            fillColor: Colors.white,
+            filled: true,
+            // counterText: '',
+            contentPadding: EdgeInsets.only(
+            left: 10,
+            ),
+            ),
+            style: TextStyle(
+            fontSize: 16,
+            fontStyle: FontStyle.italic,
+            ),
+            ),
+            ),
+          ),
+
+
+              SimpleDialogOption(
+                padding: const EdgeInsets.all(20),
+                child: const Text('Cancel'),
+                onPressed: () {
+                  print(selected);
+                  setState(() {
+                    selected = 0;
+                  });
+                  print(selected);
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        }).then((value) => _videoUrlController.text.length ==0? setState(() {
+      selected = 0;
+    }):print('not null')
+
+
+
+    );
+
+
+   /* return Container(
+      width: MediaQuery.of(context).size.width * 0.9,
+      child: TextField(
+        controller: _videoUrlController,
+        maxLines: 1,
+        decoration: const InputDecoration(
+          hintText: "Paste video url here",
+
+          border: InputBorder.none,
+          fillColor: Colors.white,
+          filled: true,
+          // counterText: '',
+          contentPadding: EdgeInsets.only(
+            left: 10,
+          ),
+        ),
+        style: TextStyle(
+          fontSize: 16,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
+    );
+
+
+    */
+
+  }
+
+
+
+
+
   _selectImage(BuildContext context) async {
+    
     return showDialog(
         context: context,
         builder: (context) {
@@ -160,7 +305,7 @@ class _AddPostState extends State<AddPost> {
               ),
             ],
           );
-        });
+        }).then((value) => print('DISMISSED'));
   }
 
   void clearImage() {
@@ -210,6 +355,8 @@ class _AddPostState extends State<AddPost> {
   }
 
   void postImage(
+
+
     String uid,
     String username,
     String profImage,
@@ -218,6 +365,15 @@ class _AddPostState extends State<AddPost> {
       _isLoading = true;
     });
     try {
+      if(selected == 2)
+        {
+          if(_videoUrlController.text.length == 0)
+            {
+              setState(() {
+               selected = 0;
+              });
+            }
+        }
       String res = await FirestoreMethods().uploadPost(
         uid,
         username,
@@ -225,7 +381,7 @@ class _AddPostState extends State<AddPost> {
         global,
         _titleController.text,
         _bodyController.text,
-        videoUrl,
+        videoUrl!,
         _file!,
         selected,
       );
@@ -551,30 +707,7 @@ class _AddPostState extends State<AddPost> {
                       SizedBox(
                         height: 6,
                       ),
-                      selected == 2
-                          ? Container(
-                              width: MediaQuery.of(context).size.width * 0.9,
-                              child: TextField(
-                                controller: _videoUrlController,
-                                maxLines: 1,
-                                decoration: const InputDecoration(
-                                  hintText: "Paste video url here",
 
-                                  border: InputBorder.none,
-                                  fillColor: Colors.white,
-                                  filled: true,
-                                  // counterText: '',
-                                  contentPadding: EdgeInsets.only(
-                                    left: 10,
-                                  ),
-                                ),
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                              ),
-                            )
-                          : Container(),
                       _file != null
                           ? Container(
                               width: MediaQuery.of(context).size.width * 0.9,
@@ -1063,6 +1196,7 @@ class _AddPostState extends State<AddPost> {
           () {
             selected = index;
             index == 1 ? _selectImage(context) : null;
+            index == 2 ? _selectvideo(context):null;
             index == 0 || index == 2 ? clearImage() : null;
           },
         ),
@@ -1086,7 +1220,10 @@ class _AddPostState extends State<AddPost> {
         onTap: () => setState(
           () {
             selected = index;
+            print('this is the index:');
+            print(index);
             index == 1 ? _selectImage(context) : null;
+            index == 2 ? _selectvideo(context):null;
             index == 0 || index == 2 ? clearImage() : null;
             index == 0 || index == 1 ? clearVideoUrl() : null;
           },
@@ -1117,4 +1254,6 @@ class _AddPostState extends State<AddPost> {
     _bodyController.dispose;
     _videoUrlController.dispose;
   }
+
+
 }
