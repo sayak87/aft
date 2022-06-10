@@ -34,12 +34,13 @@ class _AddPostState extends State<AddPost> {
   bool _isLoading = false;
   var messages = 'true';
   var global = 'true';
-  Uint8List? _file;
+   Uint8List? _file;
   var selected = 0;
   String? videoUrl = 'DavckVZylkg';
   bool textfield1selected = false;
   bool textfield1selected2 = false;
   int i=1;
+  String proxyurl = 'abc';
 
   late final KeyboardVisibilityController _keyboardVisibilityController;
   late StreamSubscription<bool> keyboardSubscription;
@@ -269,26 +270,28 @@ class _AddPostState extends State<AddPost> {
                 padding: const EdgeInsets.all(20),
                 child: const Text('Open Camera'),
                 onPressed: () async {
-                  Navigator.of(context).pop();
+
                   Uint8List file = await pickImage(
                     ImageSource.camera,
                   );
                   setState(() {
                     _file = file;
                   });
+                  Navigator.of(context).pop();
                 },
               ),
               SimpleDialogOption(
                 padding: const EdgeInsets.all(20),
                 child: const Text('Choose from gallery'),
                 onPressed: () async {
-                  Navigator.of(context).pop();
+
                   Uint8List file = await pickImage(
                     ImageSource.gallery,
                   );
                   setState(() {
                     _file = file;
                   });
+                  Navigator.of(context).pop();
                 },
               ),
               SimpleDialogOption(
@@ -305,12 +308,14 @@ class _AddPostState extends State<AddPost> {
               ),
             ],
           );
-        }).then((value) => print('DISMISSED'));
+        }).then((value) => _file == null? setState(() {
+      selected = 0;
+    }):print('not null') );
   }
 
   void clearImage() {
     setState(() {
-      _file = null;
+       _file = null;
     });
   }
 
@@ -374,6 +379,128 @@ class _AddPostState extends State<AddPost> {
               });
             }
         }
+
+      print('THIS IS SELECTED IN POST IMAGE' );
+      print(selected);
+
+
+      if(selected == 0)
+        {
+          try{
+            String res = await FirestoreMethods().uploadPostjusttext(
+              uid,
+              username,
+              profImage,
+              global,
+              _titleController.text,
+              _bodyController.text,
+              //videoUrl!,
+
+
+              selected,
+            );
+
+            if (res == "success") {
+              setState(() {
+                _isLoading = true;
+              });
+              showSnackBar('Posted!', context);
+              // clearImage();
+            } else {
+              setState(() {
+                _isLoading = true;
+              });
+              showSnackBar(res, context);
+            }
+          } catch(e)
+    {
+      showSnackBar(e.toString(), context);
+    }
+
+
+
+        }
+
+
+      if(selected == 1)
+      {
+        try{
+          String res = await FirestoreMethods().uploadPostjustImage(
+            uid,
+            username,
+            profImage,
+            global,
+            _titleController.text,
+            _bodyController.text,
+            //videoUrl!,
+            _file!,
+
+            selected,
+          );
+
+          if (res == "success") {
+            setState(() {
+              _isLoading = true;
+            });
+            showSnackBar('Posted!', context);
+            // clearImage();
+          } else {
+            setState(() {
+              _isLoading = true;
+            });
+            showSnackBar(res, context);
+          }
+        } catch(e)
+        {
+          showSnackBar(e.toString(), context);
+        }
+
+
+
+      }
+
+
+
+      if(selected == 2)
+      {
+        try{
+          String res = await FirestoreMethods().uploadPostJustUrl(
+            uid,
+            username,
+            profImage,
+            global,
+            _titleController.text,
+            _bodyController.text,
+            videoUrl!,
+            //_file!,
+
+            selected,
+          );
+
+          if (res == "success") {
+            setState(() {
+              _isLoading = true;
+            });
+            showSnackBar('Posted!', context);
+            // clearImage();
+          } else {
+            setState(() {
+              _isLoading = true;
+            });
+            showSnackBar(res, context);
+          }
+        } catch(e)
+        {
+          showSnackBar(e.toString(), context);
+        }
+
+
+
+      }
+
+
+
+     /*
       String res = await FirestoreMethods().uploadPost(
         uid,
         username,
@@ -381,8 +508,9 @@ class _AddPostState extends State<AddPost> {
         global,
         _titleController.text,
         _bodyController.text,
-        videoUrl!,
-        _file!,
+        //videoUrl!,
+        proxyurl,
+        _file,
         selected,
       );
       if (res == "success") {
@@ -397,9 +525,14 @@ class _AddPostState extends State<AddPost> {
         });
         showSnackBar(res, context);
       }
+      */
+
     } catch (e) {
       showSnackBar(e.toString(), context);
     }
+
+
+
   }
 
   @override
