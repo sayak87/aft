@@ -41,6 +41,8 @@ class _AddPostState extends State<AddPost> {
   bool textfield1selected2 = false;
   int i=1;
   String proxyurl = 'abc';
+  bool emptyTittle = false;
+
 
   late final KeyboardVisibilityController _keyboardVisibilityController;
   late StreamSubscription<bool> keyboardSubscription;
@@ -217,7 +219,7 @@ class _AddPostState extends State<AddPost> {
               ),
             ],
           );
-        }).then((value) => _videoUrlController.text.length ==0? setState(() {
+        }).then((value) => _videoUrlController.text.length ==0 || videoUrl ==  null? setState(() {
       selected = 0;
     }):print('not null')
 
@@ -362,14 +364,15 @@ class _AddPostState extends State<AddPost> {
   void postImage(
 
 
+
     String uid,
     String username,
     String profImage,
   ) async {
-    setState(() {
-      _isLoading = true;
-    });
+
     try {
+
+
       if(selected == 2)
         {
           if(_videoUrlController.text.length == 0)
@@ -383,8 +386,19 @@ class _AddPostState extends State<AddPost> {
       print('THIS IS SELECTED IN POST IMAGE' );
       print(selected);
 
+      if(_titleController.text.length!=0)
+      {
+        setState(() {
+         emptyTittle = false;
+        });
 
-      if(selected == 0)
+        setState(() {
+          _isLoading = true;
+        });
+
+        print('Entered this');
+
+        if(selected == 0)
         {
           try{
             String res = await FirestoreMethods().uploadPostjusttext(
@@ -413,90 +427,98 @@ class _AddPostState extends State<AddPost> {
               showSnackBar(res, context);
             }
           } catch(e)
-    {
-      showSnackBar(e.toString(), context);
+          {
+            showSnackBar(e.toString(), context);
+          }
+
+
+
+        }
+
+
+        if(selected == 1)
+        {
+          try{
+            String res = await FirestoreMethods().uploadPostjustImage(
+              uid,
+              username,
+              profImage,
+              global,
+              _titleController.text,
+              _bodyController.text,
+              //videoUrl!,
+              _file!,
+
+              selected,
+            );
+
+            if (res == "success") {
+              setState(() {
+                _isLoading = true;
+              });
+              showSnackBar('Posted!', context);
+              // clearImage();
+            } else {
+              setState(() {
+                _isLoading = true;
+              });
+              showSnackBar(res, context);
+            }
+          } catch(e)
+          {
+            showSnackBar(e.toString(), context);
+          }
+
+
+
+        }
+
+
+
+        if(selected == 2)
+        {
+          try{
+            String res = await FirestoreMethods().uploadPostJustUrl(
+              uid,
+              username,
+              profImage,
+              global,
+              _titleController.text,
+              _bodyController.text,
+              videoUrl!,
+              //_file!,
+
+              selected,
+            );
+
+            if (res == "success") {
+              setState(() {
+                _isLoading = true;
+              });
+              showSnackBar('Posted!', context);
+              // clearImage();
+            } else {
+              setState(() {
+                _isLoading = true;
+              });
+              showSnackBar(res, context);
+            }
+          } catch(e)
+          {
+            showSnackBar(e.toString(), context);
+          }
+
+
+
+        }
+
+      }
+    else{
+      setState(() {
+        emptyTittle = true;
+      });
     }
 
-
-
-        }
-
-
-      if(selected == 1)
-      {
-        try{
-          String res = await FirestoreMethods().uploadPostjustImage(
-            uid,
-            username,
-            profImage,
-            global,
-            _titleController.text,
-            _bodyController.text,
-            //videoUrl!,
-            _file!,
-
-            selected,
-          );
-
-          if (res == "success") {
-            setState(() {
-              _isLoading = true;
-            });
-            showSnackBar('Posted!', context);
-            // clearImage();
-          } else {
-            setState(() {
-              _isLoading = true;
-            });
-            showSnackBar(res, context);
-          }
-        } catch(e)
-        {
-          showSnackBar(e.toString(), context);
-        }
-
-
-
-      }
-
-
-
-      if(selected == 2)
-      {
-        try{
-          String res = await FirestoreMethods().uploadPostJustUrl(
-            uid,
-            username,
-            profImage,
-            global,
-            _titleController.text,
-            _bodyController.text,
-            videoUrl!,
-            //_file!,
-
-            selected,
-          );
-
-          if (res == "success") {
-            setState(() {
-              _isLoading = true;
-            });
-            showSnackBar('Posted!', context);
-            // clearImage();
-          } else {
-            setState(() {
-              _isLoading = true;
-            });
-            showSnackBar(res, context);
-          }
-        } catch(e)
-        {
-          showSnackBar(e.toString(), context);
-        }
-
-
-
-      }
 
 
 
@@ -740,6 +762,14 @@ class _AddPostState extends State<AddPost> {
                           ),
                         ),
                       ),
+
+                      SizedBox(
+                        height: 12,
+                      ),
+                      emptyTittle==true?Text('Error: The tittle cannot be blank'):
+
+                          Container(),
+
                       SizedBox(
                         height: 12,
                       ),
