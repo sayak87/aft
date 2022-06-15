@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "66376789479",
+    "firebase_url": "https://aft-project-e9310-default-rtdb.firebaseio.com",
     "project_id": "aft-project-e9310",
     "storage_bucket": "aft-project-e9310.appspot.com"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "66376789479-ao48avcr8eqpoa9i6rjd7u2cn2od2h7a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.aft",
+            "certificate_hash": "8c24ee0620a360205308b5f97d3858b861f60838"
+          }
+        },
         {
           "client_id": "66376789479-2hpdm5h379no69mgf4deisgv38brptnt.apps.googleusercontent.com",
           "client_type": 3
