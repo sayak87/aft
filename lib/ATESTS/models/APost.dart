@@ -7,6 +7,7 @@ class Post {
   final String uid;
   final String username;
   final String profImage;
+  final String country;
   final datePublished;
   final String global;
   final String title;
@@ -23,6 +24,7 @@ class Post {
     required this.uid,
     required this.username,
     required this.profImage,
+    required this.country,
     required this.datePublished,
     required this.global,
     required this.title,
@@ -40,6 +42,7 @@ class Post {
         "uid": uid,
         "username": username,
         "profImage": profImage,
+        "country": country,
         "datePublished": datePublished,
         "global": global,
         "title": title,
@@ -60,6 +63,7 @@ class Post {
       uid: snapshot['uid'],
       username: snapshot['username'],
       profImage: snapshot['profImage'],
+      country: snapshot['country'],
       datePublished: snapshot['datePublished'],
       global: snapshot['global'],
       title: snapshot['title'],

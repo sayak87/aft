@@ -1,13 +1,18 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../responsive/AMobileScreenLayout.dart';
 import '../responsive/AResponsiveScreenLayout.dart';
 import '../responsive/AWebScreenLayout.dart';
 import '../other/ATextField.dart';
 import '../methods/AAuthMethods.dart';
 import '../other/AUtils.dart';
+import '../screens/ACountries.dart';
+import '../screens/ACountriesValues.dart';
 import 'ALogin.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -18,13 +23,19 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _countryController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   // final TextEditingController _bioController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   Uint8List? _image;
   bool _isLoading = false;
-  var country = 'us';
-
+   var country = 'us';
+  String oneValue = '';
+  var countryIndex;
+  @override
+  void initState() {
+    super.initState();
+  }
   @override
   void dispose() {
     super.dispose();
@@ -76,6 +87,13 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Widget build(BuildContext context) {
+    var countryIndex = long.indexOf(oneValue);
+    if (countryIndex >= 0) {
+      country = short[countryIndex];
+
+
+      print(country);
+    }
     return Scaffold(
         // resizeToAvoidBottomInset: false,
         body: SafeArea(
@@ -129,6 +147,56 @@ class _SignupScreenState extends State<SignupScreen> {
                         textInputType: TextInputType.emailAddress,
                         textEditingController: _emailController,
                       ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        height: 48,
+                        child:
+                        FlatButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Countries()),
+                            ).then((value) => {getValue()});
+
+                          },
+                          padding: EdgeInsets.only(left:8.0),
+                          textColor: Colors.black,
+                          color: Color(0xFFEDEDED),
+                          shape: RoundedRectangleBorder(side: const BorderSide(
+                              color: Color(0XFFD0D0D0),
+                              width: 0.5,
+                              style: BorderStyle.solid
+                          ), borderRadius: BorderRadius.circular(5)),
+                          child: country=="us"?const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text("Select your Country",
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  color: Color(0XFFA8A8A8),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.normal,
+                                  fontFamily: 'Roboto',
+                                )
+                            ),
+                          )
+                          :
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text("$country",
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.normal,
+                                  fontFamily: 'Roboto',
+                                )
+                            ),
+                          ),
+
+                        ),
+                      ),
+
                       const SizedBox(height: 24),
                       TextFieldInputDone(
                           hintText: 'Enter your password',
@@ -195,5 +263,22 @@ class _SignupScreenState extends State<SignupScreen> {
                         ],
                       )
                     ].reversed.toList()))));
+  }
+  getValue() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      oneValue = prefs.getString('selected_radio') ?? '';
+
+      var countryIndex = long.indexOf(oneValue);
+      if (countryIndex >= 0) {
+        country = short[countryIndex];
+
+       print('abc');
+        print(country);
+
+        prefs.setString('cont', country);
+      }
+
+    });
   }
 }

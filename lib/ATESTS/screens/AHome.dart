@@ -31,6 +31,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     if (prefs.getString('selected_radio3') != null) {
       setState(() {
         global = prefs.getString('selected_radio3')!;
+
       });
     }
   }
@@ -140,8 +141,13 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
           ),
         ],
       ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('posts').snapshots(),
+
+
+
+      //changes by Suman Nandi
+      body: global=="true"?
+      StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('posts').where("global", isEqualTo: global).snapshots(),
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -151,13 +157,54 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
           }
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) => PostCardTest(
-              snap: snapshot.data!.docs[index].data(),
-            ),
+            itemBuilder: (context, index) {
+              if(snapshot.data!.docs[index].data() == null){
+                print('null');
+                return Container();
+              }
+              else{
+                return PostCardTest(
+                  snap: snapshot.data!.docs[index].data(),
+                );
+              }
+            },
+          );
+        },
+      ):
+      StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('posts').where("global", isEqualTo: global).snapshots(),
+        builder: (context,
+            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+             if(snapshot.data!.docs[index].data() == null){
+             print('null');
+             return Container();
+             }
+             else{
+              return PostCardTest(
+                 snap: snapshot.data!.docs[index].data(),
+               );
+             }
+            },
           );
         },
       ),
     );
+
+/////////////////
+
+
+
+
+
   }
 
   Widget rollingIconBuilderStringThree(

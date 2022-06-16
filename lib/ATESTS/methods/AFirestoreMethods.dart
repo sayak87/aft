@@ -18,17 +18,19 @@ class FirestoreMethods {
     String uid,
     String username,
     String profImage,
+    String country,
     String global,
     String title,
     String body,
     String videoUrl,
-    Uint8List file,
+    String photoUrl,
     int selected,
   ) async {
     String res = "some error occurred";
     try {
-      String photoUrl =
-          await StorageMethods().uploadImageToStorage('posts', file, true);
+
+      /*String photoUrl =
+          await StorageMethods().uploadImageToStorage('posts', file, true);*/
 
       String postId = const Uuid().v1();
 
@@ -37,6 +39,7 @@ class FirestoreMethods {
         uid: uid,
         username: username,
         profImage: profImage,
+        country:country,
         datePublished: DateTime.now(),
         global: global,
         title: title,
@@ -66,6 +69,7 @@ class FirestoreMethods {
       String uid,
       String username,
       String profImage,
+      String country,
       String global,
       String title,
       String body,
@@ -84,6 +88,7 @@ class FirestoreMethods {
         uid: uid,
         username: username,
         profImage: profImage,
+        country:country,
         datePublished: DateTime.now(),
         global: global,
         title: title,
@@ -111,6 +116,7 @@ class FirestoreMethods {
       String uid,
       String username,
       String profImage,
+      String country,
       String global,
       String title,
       String body,
@@ -129,6 +135,7 @@ class FirestoreMethods {
         uid: uid,
         username: username,
         profImage: profImage,
+        country:country,
         datePublished: DateTime.now(),
         global: global,
         title: title,
@@ -158,6 +165,7 @@ class FirestoreMethods {
       String uid,
       String username,
       String profImage,
+      String country,
       String global,
       String title,
       String body,
@@ -176,6 +184,7 @@ class FirestoreMethods {
         uid: uid,
         username: username,
         profImage: profImage,
+        country:country,
         datePublished: DateTime.now(),
         global: global,
         title: title,

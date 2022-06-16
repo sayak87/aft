@@ -14,10 +14,12 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart' as ytplayer;
 import 'package:youtube_player_iframe/youtube_player_iframe.dart' ;
 import 'dart:core';
 
+import '../methods/AStorageMethods.dart';
 import '../models/AUser.dart';
 import '../provider/AUserProvider.dart';
 import '../methods/AFirestoreMethods.dart';
 import '../other/AUtils.dart';
+import 'ACountriesValues.dart';
 
 class AddPost extends StatefulWidget {
   const AddPost({Key? key}) : super(key: key);
@@ -31,18 +33,23 @@ class _AddPostState extends State<AddPost> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _bodyController = TextEditingController();
   final TextEditingController _videoUrlController = TextEditingController();
+
+
+  List<TextEditingController>? _cont = [];
+
   bool _isLoading = false;
   var messages = 'true';
   var global = 'true';
-   Uint8List? _file;
+  Uint8List? _file;
   var selected = 0;
   String? videoUrl = 'DavckVZylkg';
   bool textfield1selected = false;
   bool textfield1selected2 = false;
-  int i=1;
+  int i=2;
   String proxyurl = 'abc';
   bool emptyTittle = false;
-
+  String country = '';
+  String oneValue = '';
 
   late final KeyboardVisibilityController _keyboardVisibilityController;
   late StreamSubscription<bool> keyboardSubscription;
@@ -351,6 +358,20 @@ class _AddPostState extends State<AddPost> {
         messages = prefs.getString('selected_radio4')!;
       });
     }
+    setState(() {
+      oneValue = prefs.getString('selected_radio') ?? '';
+
+      var countryIndex = long.indexOf(oneValue);
+      if (countryIndex >= 0) {
+        country = short[countryIndex];
+
+        print('abc');
+        print(country);
+
+        prefs.setString('cont', country);
+      }
+
+    });
   }
 
   Future<void> setValueM(String valuem) async {
@@ -365,23 +386,23 @@ class _AddPostState extends State<AddPost> {
 
 
 
-    String uid,
-    String username,
-    String profImage,
-  ) async {
+      String uid,
+      String username,
+      String profImage,
+      ) async {
 
     try {
 
 
       if(selected == 2)
+      {
+        if(_videoUrlController.text.length == 0)
         {
-          if(_videoUrlController.text.length == 0)
-            {
-              setState(() {
-               selected = 0;
-              });
-            }
+          setState(() {
+            selected = 0;
+          });
         }
+      }
 
       print('THIS IS SELECTED IN POST IMAGE' );
       print(selected);
@@ -389,7 +410,7 @@ class _AddPostState extends State<AddPost> {
       if(_titleController.text.length!=0)
       {
         setState(() {
-         emptyTittle = false;
+          emptyTittle = false;
         });
 
         setState(() {
@@ -398,6 +419,7 @@ class _AddPostState extends State<AddPost> {
 
         print('Entered this');
 
+        /*
         if(selected == 0)
         {
           try{
@@ -405,6 +427,7 @@ class _AddPostState extends State<AddPost> {
               uid,
               username,
               profImage,
+              country,
               global,
               _titleController.text,
               _bodyController.text,
@@ -443,6 +466,8 @@ class _AddPostState extends State<AddPost> {
               uid,
               username,
               profImage,
+              country,
+
               global,
               _titleController.text,
               _bodyController.text,
@@ -482,7 +507,9 @@ class _AddPostState extends State<AddPost> {
               uid,
               username,
               profImage,
+              country,
               global,
+
               _titleController.text,
               _bodyController.text,
               videoUrl!,
@@ -512,42 +539,59 @@ class _AddPostState extends State<AddPost> {
 
         }
 
+
+         */
+        String photoUrl="";
+        if(_file==null){
+          photoUrl="";
+        }else{
+          photoUrl =
+          await StorageMethods().uploadImageToStorage('posts', _file!, true);
+        }
+
+
+
+        String res = await FirestoreMethods().uploadPost(
+          uid,
+          username,
+          profImage,
+          country,
+          global,
+          _titleController.text,
+          _bodyController.text,
+          videoUrl!,
+          //proxyurl,
+          photoUrl,
+          selected,
+        );
+        if (res == "success") {
+          setState(() {
+            _isLoading = true;
+          });
+          showSnackBar('Posted!', context);
+          // clearImage();
+        } else {
+          setState(() {
+            _isLoading = true;
+          });
+          showSnackBar(res, context);
+        }
+
+
+
       }
-    else{
-      setState(() {
-        emptyTittle = true;
-      });
-    }
 
-
-
-
-     /*
-      String res = await FirestoreMethods().uploadPost(
-        uid,
-        username,
-        profImage,
-        global,
-        _titleController.text,
-        _bodyController.text,
-        //videoUrl!,
-        proxyurl,
-        _file,
-        selected,
-      );
-      if (res == "success") {
+      else{
         setState(() {
-          _isLoading = true;
+          emptyTittle = true;
         });
-        showSnackBar('Posted!', context);
-        // clearImage();
-      } else {
-        setState(() {
-          _isLoading = true;
-        });
-        showSnackBar(res, context);
       }
-      */
+
+
+
+
+
+
 
     } catch (e) {
       showSnackBar(e.toString(), context);
@@ -1215,128 +1259,193 @@ class _AddPostState extends State<AddPost> {
         ),
         body: SingleChildScrollView(
           reverse: true,
-          child: Column(
-            children: [
-              _isLoading
-                  ? const LinearProgressIndicator()
-                  : const Padding(padding: EdgeInsets.only(top: 0)),
-              // const Divider(),
-              SizedBox(
-                height: 15,
-              ),
-              Column(
+
+
+              child: Column(
                 children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    // decoration: BoxDecoration(
-                    //   borderRadius: BorderRadius.circular(5),
-                    //   color: Colors.white,
-                    // ),
-                    child: TextField(
-                      //168 is really the max but 170 should be okay
-                      maxLength: 50,
-                      controller: _titleController,
-                      decoration: const InputDecoration(
-                        hintText: "Option #1",
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.blue,
-                          ),
-                        ),
-                        border: InputBorder.none,
-                        fillColor: Colors.white,
-                        filled: true,
-                        contentPadding: EdgeInsets.only(
-                          left: 10,
-                        ),
-                      ),
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontStyle: FontStyle.italic,
-                      ),
-                      maxLines: null,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 12,
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    // decoration: BoxDecoration(
-                    //   border: Border.all(width: 2, color: Colors.blueAccent),
-                    //   borderRadius: BorderRadius.circular(5),
-                    //   color: Colors.white,
-                    // ),
-                    child: TextFormField(
-                      controller: _bodyController,
-                      maxLength: 50,
-                      decoration: const InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        hintText: "Option #2",
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.only(
-                          left: 10,
-                        ),
-                      ),
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontStyle: FontStyle.italic,
-                      ),
-                      maxLines: null,
-                    ),
-                  ),
+                  _isLoading
+                      ? const LinearProgressIndicator()
+                      : const Padding(padding: EdgeInsets.only(top: 0)),
                   // const Divider(),
-                  TextButton(
-                    child: Text('add'),
-                    onPressed: () {},
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+
+                      SizedBox(
+                        height: 500,
+                          width: MediaQuery.of(context).size.width * 1,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+
+                            itemCount: i,
+                              itemBuilder: (context,index)
+                                  {
+                                    _cont!.add(TextEditingController());
+
+                                    int ic = index +1;
+                                    return Row(
+                                      children: [
+                                        Container(
+                                          width: MediaQuery.of(context).size.width * 0.8,
+                                          // decoration: BoxDecoration(
+                                          //   borderRadius: BorderRadius.circular(5),
+                                          //   color: Colors.white,
+                                          // ),
+                                          child: TextField(
+                                            //168 is really the max but 170 should be okay
+                                            maxLength: 50,
+                                            //controller: _titleController,
+                                            onTap: (){
+                                              print(i);
+                                            },
+                                            controller: _cont![index],
+                                            decoration:  InputDecoration(
+                                              hintText: "Option #$ic",
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.blue,
+                                                ),
+                                              ),
+                                              border: InputBorder.none,
+                                              fillColor: Colors.white,
+                                              filled: true,
+                                              contentPadding: EdgeInsets.only(
+                                                left: 10,
+                                              ),
+                                            ),
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontStyle: FontStyle.italic,
+                                            ),
+                                            maxLines: null,
+                                          ),
+                                        ),
+
+
+                                        IconButton(
+                                          onPressed: (){
+
+                                            print(index);
+                                            print(i);
+
+                                            if(i>2)
+                                              {
+                                                setState(() {
+
+                                                  i= i-1;
+                                                  print(i);
+
+
+
+                                                  _cont![index].clear();
+                                                });
+
+                                                if(index != i)
+                                                {
+                                                  print('abc');
+                                                  print(_cont![i].text);
+
+
+                                                   if(_cont![i-1].text.isEmpty)
+                                                     {
+                                                       _cont![i-1].text = _cont![i].text;
+                                                     }
+
+
+
+
+
+                                                  print( _cont![i-1].text);
+                                                  _cont![i].clear();
+                                                }
+
+
+                                              }
+
+
+
+                                          },
+                                          icon: Icon(Icons.delete,size: 20,),
+
+
+                                        ),
+
+
+                                      ],
+                                    );
+                                    SizedBox(
+                                    height: 12,
+                                    );
+                                  }
+
+                          )
+                      ),
+
+
+                      i==10? Text('Max'): TextButton(
+                        child: Text('add'),
+                        onPressed: () {
+
+                          setState(() {
+                            i= i+1;
+                          });
+
+
+                        },
+                      ),
+                    ],
+                  ),
+                  PhysicalModel(
+                    color: Colors.blueAccent,
+                    elevation: 8,
+                    shadowColor: Colors.black,
+                    borderRadius: BorderRadius.circular(30),
+                    child: InkWell(
+                      onTap: () => postImage(
+                        user.uid,
+                        user.username,
+                        user.photoUrl,
+                      ),
+                      child: Container(
+                        height: 40,
+                        width: 260,
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 14.0),
+                              child: Icon(Icons.send, color: Colors.white),
+                            ),
+                            global == 'true'
+                                ? const Text(
+                              'Send Message Globally',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  letterSpacing: 1),
+                            )
+                                : const Text(
+                              'Send Message Nationally',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  letterSpacing: 1),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
-              PhysicalModel(
-                color: Colors.blueAccent,
-                elevation: 8,
-                shadowColor: Colors.black,
-                borderRadius: BorderRadius.circular(30),
-                child: InkWell(
-                  onTap: () => postImage(
-                    user.uid,
-                    user.username,
-                    user.photoUrl,
-                  ),
-                  child: Container(
-                    height: 40,
-                    width: 260,
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 14.0),
-                          child: Icon(Icons.send, color: Colors.white),
-                        ),
-                        global == 'true'
-                            ? const Text(
-                                'Send Message Globally',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15,
-                                    letterSpacing: 1),
-                              )
-                            : const Text(
-                                'Send Message Nationally',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15,
-                                    letterSpacing: 1),
-                              ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+
+
+
+
         ),
       );
     }

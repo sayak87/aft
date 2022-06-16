@@ -31,6 +31,9 @@ class _PostCardTestState extends State<PostCardTest> {
   @override
   void initState() {
     super.initState();
+    //changes by Suman Nandi
+    placement=(widget.snap['plus'].length - widget.snap['minus'].length).toString();
+    /////////
     var url = widget.snap['videoUrl'];
     controller = YoutubePlayerController(
       initialVideoId: YoutubePlayer.convertUrlToId(url)!,
@@ -117,8 +120,18 @@ class _PostCardTestState extends State<PostCardTest> {
                                             fontWeight: FontWeight.bold,
                                             color: Colors.black),
                                       )
-                                    : null,
+                                    :
+                                    //changes by Suman Nandi
+                                Text(
+                                  widget.snap['username'],
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black),
+                                ),
                               ),
+                              /////////////////
                               SizedBox(height: 4),
                               Text(
                                 DateFormat.yMMMd().format(
@@ -293,7 +306,7 @@ class _PostCardTestState extends State<PostCardTest> {
                                     ]),
                               );
                             },
-                            child: Container(
+                            child: widget.snap['postUrl']==""?Container():Container(
                               // height: 150,
                               height: 150,
                               width: 265,
@@ -345,6 +358,11 @@ class _PostCardTestState extends State<PostCardTest> {
                                   user.uid,
                                   widget.snap['plus'],
                                 );
+                                ////changes by Suman Nandi
+                                setState(() {
+                                  placement=(widget.snap['plus'].length - widget.snap['minus'].length).toString();
+                                });
+                                ////////
                               },
                               icon: widget.snap['plus'].contains(user.uid)
                                   ? const Icon(
@@ -371,6 +389,11 @@ class _PostCardTestState extends State<PostCardTest> {
                                 user.uid,
                                 widget.snap['minus'],
                               );
+                              //changes by Suman Nandi
+                              setState(() {
+                                placement=(widget.snap['plus'].length - widget.snap['minus'].length).toString();
+                              });
+                              //////////
                             },
                             icon: widget.snap['minus'].contains(user.uid)
                                 ? const Icon(
