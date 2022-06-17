@@ -12,9 +12,11 @@ import 'ALikeAnimation.dart';
 
 class PostCardTest extends StatefulWidget {
   final snap;
+  final indexPlacement;
   const PostCardTest({
     Key? key,
     required this.snap,
+    required this.indexPlacement,
   }) : super(key: key);
 
   @override
@@ -31,9 +33,7 @@ class _PostCardTestState extends State<PostCardTest> {
   @override
   void initState() {
     super.initState();
-    //changes by Suman Nandi
-    placement=(widget.snap['plus'].length - widget.snap['minus'].length).toString();
-    /////////
+    placement=(widget.indexPlacement+1).toString();
     var url = widget.snap['videoUrl'];
     controller = YoutubePlayerController(
       initialVideoId: YoutubePlayer.convertUrlToId(url)!,
@@ -358,12 +358,12 @@ class _PostCardTestState extends State<PostCardTest> {
                                   user.uid,
                                   widget.snap['plus'],
                                 );
-                                ////changes by Suman Nandi
-                                setState(() {
-                                  placement=(widget.snap['plus'].length - widget.snap['minus'].length).toString();
-                                });
-                                ////////
-                              },
+                                await FirestoreMethods().scoreMessage(
+                                  widget.snap['postId'],
+                                  user.uid,
+                                  widget.snap['plus'].length - widget.snap['minus'].length
+                                );
+                                },
                               icon: widget.snap['plus'].contains(user.uid)
                                   ? const Icon(
                                       Icons.add_circle,
@@ -389,11 +389,11 @@ class _PostCardTestState extends State<PostCardTest> {
                                 user.uid,
                                 widget.snap['minus'],
                               );
-                              //changes by Suman Nandi
-                              setState(() {
-                                placement=(widget.snap['plus'].length - widget.snap['minus'].length).toString();
-                              });
-                              //////////
+                              await FirestoreMethods().scoreMessage(
+                                  widget.snap['postId'],
+                                  user.uid,
+                                  widget.snap['plus'].length - widget.snap['minus'].length
+                              );
                             },
                             icon: widget.snap['minus'].contains(user.uid)
                                 ? const Icon(

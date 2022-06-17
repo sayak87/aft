@@ -81,7 +81,7 @@ class _AddPostState extends State<AddPost> {
 
       print('aaaa');
       print(_keyboardVisibilityController.isVisible);
-    print('abc');
+      print('abc');
 
       if (!isVisible) {
         print('bbbb');

@@ -18,6 +18,7 @@ class Post {
   final plus;
   final neutral;
   final minus;
+  final int score;
 
   const Post({
     required this.postId,
@@ -35,6 +36,7 @@ class Post {
     required this.plus,
     required this.neutral,
     required this.minus,
+    required this.score,
   });
 
   Map<String, dynamic> toJson() => {
@@ -53,6 +55,7 @@ class Post {
         "plus": plus,
         "neutral": neutral,
         "minus": minus,
+        "score": score,
       };
 
   static Post fromSnap(DocumentSnapshot snap) {
@@ -74,6 +77,7 @@ class Post {
       plus: snapshot['plus'],
       neutral: snapshot['neutral'],
       minus: snapshot['minus'],
+      score: snapshot['score'],
     );
   }
 }

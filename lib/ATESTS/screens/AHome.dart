@@ -1,8 +1,11 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:flag/flag.dart';
+import '../models/AUser.dart';
+import '../provider/AUserProvider.dart';
 import 'AAddPost.dart';
 import 'ACountriesValues.dart';
 import 'ACountries.dart';
@@ -47,10 +50,14 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
   @override
   Widget build(BuildContext context) {
     var countryIndex = long.indexOf(oneValue);
-    String flag = '';
+    String flag = 'us';
     if (countryIndex >= 0) {
       flag = short[countryIndex];
     }
+
+
+
+
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -147,7 +154,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
       //changes by Suman Nandi
       body: global=="true"?
       StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('posts').where("global", isEqualTo: global).snapshots(),
+        stream: FirebaseFirestore.instance.collection('posts').where("global", isEqualTo: global).orderBy("score", descending: true).orderBy("datePublished", descending: false).snapshots(),
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -158,21 +165,16 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) {
-              if(snapshot.data!.docs[index].data() == null){
-                print('null');
-                return Container();
-              }
-              else{
-                return PostCardTest(
-                  snap: snapshot.data!.docs[index].data(),
-                );
-              }
+              return PostCardTest(
+                snap: snapshot.data!.docs[index].data(),
+                indexPlacement: index,
+              );
             },
           );
         },
       ):
       StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('posts').where("global", isEqualTo: global).snapshots(),
+        stream: FirebaseFirestore.instance.collection('posts').where("global", isEqualTo: global).where("country", isEqualTo: flag).orderBy("score", descending: true).orderBy("datePublished", descending: false).snapshots(),
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -184,15 +186,10 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) {
-             if(snapshot.data!.docs[index].data() == null){
-             print('null');
-             return Container();
-             }
-             else{
               return PostCardTest(
-                 snap: snapshot.data!.docs[index].data(),
-               );
-             }
+                snap: snapshot.data!.docs[index].data(),
+                indexPlacement: index,
+              );
             },
           );
         },

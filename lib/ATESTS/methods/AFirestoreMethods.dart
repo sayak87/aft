@@ -50,6 +50,7 @@ class FirestoreMethods {
         plus: [],
         neutral: [],
         minus: [],
+        score: 0,
       );
 
       _firestore.collection('posts').doc(postId).set(
@@ -207,7 +208,17 @@ class FirestoreMethods {
   }
 
 
-
+  Future<void> scoreMessage(String postId, String uid, int score) async {
+    try {
+      await _firestore.collection('posts').doc(postId).update(
+        {'score': score},
+      );
+    } catch (e) {
+      print(
+        e.toString(),
+      );
+    }
+  }
   Future<void> plusMessage(String postId, String uid, List plus) async {
     try {
       if (plus.contains(uid)) {
