@@ -61,7 +61,17 @@ class AuthMethods {
     }
     return res;
   }
-
+  Future<void> countryMessage(String uid, String userName, String country) async {
+    try {
+      await _firestore.collection('users').doc(uid).update(
+        {'country': country},
+      );
+    } catch (e) {
+      print(
+        e.toString(),
+      );
+    }
+  }
   //logging in user
   Future<String> loginUser(
       {required String email, required String password}) async {

@@ -19,14 +19,15 @@ class MyHomeScreen extends StatefulWidget {
 }
 
 class _MyHomeScreenState extends State<MyHomeScreen> {
-  String oneValue = '';
+  String oneValue = 'United States of America';
   var global = 'true';
-
+  String flag = 'us';
   @override
   void initState() {
     super.initState();
     getValue();
     getValueG();
+
   }
 
   Future<void> getValueG() async {
@@ -49,11 +50,22 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var countryIndex = long.indexOf(oneValue);
-    String flag = 'us';
-    if (countryIndex >= 0) {
-      flag = short[countryIndex];
+    final User? user = Provider.of<UserProvider>(context).getUser;
+    if (user == null) {
+      return const Center(
+          child: CircularProgressIndicator(
+            color: Colors.black,
+          ));
     }
+    flag=user.country;
+    print(">>>>$flag");
+
+    var countryIndex1 = long.indexOf(oneValue);
+    if (countryIndex1 >= 0) {
+      flag = short[countryIndex1];
+      print(">>>>2$flag");
+    }
+
 
 
 
@@ -136,7 +148,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                           ).then((value) => {getValue()});
                         },
                       ),
-                      oneValue == ''
+                      flag == ''
                           ? Container()
                           : Image.asset('icons/flags/png/${flag}.png',
                               package: 'country_icons', height: 12),
@@ -217,4 +229,6 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
       oneValue = prefs.getString('selected_radio') ?? '';
     });
   }
+
+
 }

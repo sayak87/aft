@@ -389,6 +389,7 @@ class _AddPostState extends State<AddPost> {
       String uid,
       String username,
       String profImage,
+      String mCountry,
       ) async {
 
     try {
@@ -550,6 +551,12 @@ class _AddPostState extends State<AddPost> {
         }
 
 
+        print(">>>>>>>>>>>$country");
+        if(country==''){
+          country=mCountry;
+        }else{
+
+        }
 
         String res = await FirestoreMethods().uploadPost(
           uid,
@@ -1102,6 +1109,7 @@ class _AddPostState extends State<AddPost> {
                         user.uid,
                         user.username,
                         user.photoUrl,
+                        user.country,
                       ),
                       child: Container(
                         alignment: Alignment.center,
@@ -1408,6 +1416,7 @@ class _AddPostState extends State<AddPost> {
                         user.uid,
                         user.username,
                         user.photoUrl,
+                        user.country,
                       ),
                       child: Container(
                         height: 40,

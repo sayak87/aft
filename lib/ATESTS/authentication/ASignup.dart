@@ -11,6 +11,7 @@ import '../methods/AAuthMethods.dart';
 import '../other/AUtils.dart';
 import '../screens/ACountries.dart';
 import '../screens/ACountriesValues.dart';
+import '../screens/RegisterCountries.dart';
 import 'ALogin.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -156,7 +157,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => Countries()),
+                                  builder: (context) => RegisterCountries()),
                             ).then((value) => {getValue()});
 
                           },
